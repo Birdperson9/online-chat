@@ -4,7 +4,7 @@ import {
   DATABASE_ID,
   COLLECTION_ID_MESSAGES,
 } from '../appwriteConfig'
-import { ID } from 'appwrite'
+import { ID, Query } from 'appwrite'
 
 const Room = () => {
   const [messages, setMessages] = useState([])
@@ -36,7 +36,8 @@ const Room = () => {
   const getMessages = async () => {
     const response = await databases.listDocuments(
       DATABASE_ID,
-      COLLECTION_ID_MESSAGES
+      COLLECTION_ID_MESSAGES,
+      [Query.orderDesc('$createdAt'), Query.limit(20)]
     )
     setMessages(response.documents)
   }
