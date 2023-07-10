@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const getUserOnLoad = async () => {
     try {
-      const accountDetails = account.get()
+      const accountDetails = await account.get()
       setUser(accountDetails)
     } catch (error) {
       console.error(error)
