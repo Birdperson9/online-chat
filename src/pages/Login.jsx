@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../utils/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 const Login = () => {
   const { user, handleUserLogin } = useAuth()
@@ -11,11 +11,11 @@ const Login = () => {
 
   const navigate = useNavigate()
 
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate('/')
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (user) {
+      navigate('/')
+    }
+  }, [])
 
   const handleInputChange = (e) => {
     let name = e.target.name
@@ -33,7 +33,7 @@ const Login = () => {
           }}
         >
           <div className='field--wrapper'>
-            <label htmlFor='email'>Email:</label>
+            <label>Email:</label>
             <input
               required
               type='email'
@@ -64,6 +64,10 @@ const Login = () => {
             <input className='btn btn--lg btn--main' type='submit' value='Login' />
           </div>
         </form>
+
+        <p>
+          Don't have an account? Register <Link to='/register'>here</Link>
+        </p>
       </div>
     </div>
   )

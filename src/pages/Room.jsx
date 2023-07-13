@@ -36,11 +36,11 @@ const Room = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    let payload = {
+    const payload = {
       body: messageBody,
     }
 
-    let response = await databases.createDocument(
+    const response = await databases.createDocument(
       DATABASE_ID,
       COLLECTION_ID_MESSAGES,
       ID.unique(),
@@ -58,8 +58,8 @@ const Room = () => {
     setMessages(response.documents)
   }
 
-  const deleteMessage = async (message_id) => {
-    databases.deleteDocument(DATABASE_ID, COLLECTION_ID_MESSAGES, message_id)
+  const deleteMessage = async (id) => {
+    await databases.deleteDocument(DATABASE_ID, COLLECTION_ID_MESSAGES, id)
   }
 
   return (
@@ -89,6 +89,7 @@ const Room = () => {
             <div key={message.$id} className={'message--wrapper'}>
               <div className='message--header'>
                 <small className='message-timestamp'>
+                  {' '}
                   {new Date(message.$createdAt).toLocaleString()}
                 </small>
 
