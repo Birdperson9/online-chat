@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import client, { databases, DATABASE_ID, COLLECTION_ID_MESSAGES } from '../appwriteConfig'
-import { ID, Query } from 'appwrite'
+import { ID, Query, Role, Permission } from 'appwrite'
 import { Trash2 } from 'react-feather'
+import { useAuth } from '../utils/AuthContext'
 import Header from '../components/Header'
 
 const Room = () => {
   const [messages, setMessages] = useState([])
   const [messageBody, setMessageBody] = useState('')
+  const { user } = useAuth()
 
   useEffect(() => {
     getMessages()
@@ -37,14 +39,19 @@ const Room = () => {
     e.preventDefault()
 
     const payload = {
+      user_id: user.$id,
+      username: user.name,
       body: messageBody,
     }
+
+    let permissions = [Permission.write(Role.user(user.$id))]
 
     const response = await databases.createDocument(
       DATABASE_ID,
       COLLECTION_ID_MESSAGES,
       ID.unique(),
-      payload
+      payload,
+      permissions
     )
 
     setMessageBody('')
@@ -88,17 +95,27 @@ const Room = () => {
           {messages.map((message) => (
             <div key={message.$id} className={'message--wrapper'}>
               <div className='message--header'>
-                <small className='message-timestamp'>
-                  {' '}
-                  {new Date(message.$createdAt).toLocaleString()}
-                </small>
+                <p>
+                  {message?.username ? (
+                    <span>{message.username}</span>
+                  ) : (
+                    <span>Anonymous user</span>
+                  )}
 
-                <Trash2
-                  className='delete--btn'
-                  onClick={() => {
-                    deleteMessage(message.$id)
-                  }}
-                />
+                  <small className='message-timestamp'>
+                    {' '}
+                    {new Date(message.$createdAt).toLocaleString()}
+                  </small>
+                </p>
+
+                {message.$permissions.includes(`delete(\"user:${user.$id}\")`) && (
+                  <Trash2
+                    className='delete--btn'
+                    onClick={() => {
+                      deleteMessage(message.$id)
+                    }}
+                  />
+                )}
               </div>
               <div className='message--body'>
                 <span>{message.body}</span>
